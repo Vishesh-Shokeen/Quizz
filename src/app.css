@@ -1,3 +1,10 @@
+
+*{margin: 0;padding: 0;}
+
+*,*::before,*::after{
+  box-sizing: border-box;
+}
+
 html,body{
   min-height: 100vh;
 }
@@ -20,9 +27,7 @@ body{
   color: white;
 }
 
-button,img,span{
-  cursor: pointer;
-}
+
 
 button{
   all: unset;
@@ -32,15 +37,18 @@ button{
   padding: .5rem 1rem;
   border: 1px solid ;
   border-radius: 10px;
+  text-align: center;
+}
+
+button,img,span{
+  cursor: pointer;
 }
 
 span[correct]{
-  border: 1px solid rgb(98, 225, 98);
   background-color: rgb(112, 209, 112);
 }
 span[incorrect]{
-  border: 1px solid rgb(248, 95, 57);
-  background-color: rgb(196, 91, 50);
+  background-color:rgb(238, 55, 55);
 }
 div[disable='true'] {
     pointer-events: none;
@@ -52,4 +60,34 @@ button[disabled] {
 
 h1{
   font-size: .8rem;
+}
+
+
+#app{
+  background-color: inherit;
+  color: inherit;
+}
+
+main{
+  background-color: inherit;
+  color: inherit;
+}
+
+dialog{
+  width: min(100% , 700px);
+  margin: auto;
+  border-radius: 10px;
+  background-color: inherit;
+  color: inherit;
+}
+dialog > div{
+  padding: .8rem;
+  display: grid;
+  gap: 1rem;
+}
+
+input,select{
+  padding: .8rem 1.6rem;
+  background-color: inherit;
+  color: inherit;
 }

@@ -22,7 +22,7 @@
         <h1>Score : {score} /{totalQuestion} </h1>
         <img on:click={toggleMode} src={mode ? sun : moon} alt="ToggleMode" />
     </header>
-    <Questions bind:score/>
+    <Questions bind:score bind:totalQuestion/>
 </main>
 
 <style>

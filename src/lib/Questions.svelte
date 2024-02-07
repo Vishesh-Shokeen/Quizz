@@ -1,38 +1,17 @@
 <script>
-    import { fade } from "svelte/transition";
+    import QuizDialog from "../lib/QuizDialog.svelte";
     export let score;
-    let dataArray;
+    export let totalQuestion;
+
     let questionNumber = 0;
-    const url =
-        "https://opentdb.com/api.php?amount=5&category=17&difficulty=easy&type=multiple";
-    const fetchApi = async () => {
+    let url = `https://opentdb.com/api.php?amount=5&category=9&difficulty=medium&type=multiple`;
+    $: data = fetchApi(url);
+
+    const fetchApi = async (url) => {
         const res = await fetch(url);
         const data = await res.json();
         return data;
     };
-
-    dataArray = fetchApi();
-    const restartQuiz = () => {
-        score = 0;
-        questionNumber = 0;
-        dataArray = fetchApi();
-    };
-
-    const checkAnswerFn = (value, correct_answer) => {
-        const optionSelected = document.getElementById(`${value}`);
-        const correctOption = document.getElementById(`${correct_answer}`);
-        const optionsWrapper = document.querySelector("#optionsWrapper");
-
-        optionsWrapper.setAttribute("disable", true);
-
-        correctOption.setAttribute("correct", true);
-        if (optionSelected === correctOption) {
-            ++score;
-        } else {
-            optionSelected.setAttribute("incorrect", true);
-        }
-    };
-
     const nextQuestionFn = (quizLength) => {
         const btn = document.querySelector("#nextBtn");
         const optionsWrapper = document.querySelector("#optionsWrapper");
@@ -47,12 +26,38 @@
             ? ++questionNumber
             : btn.setAttribute("disabled", true);
     };
+
+    const restartQuizFn = () => {
+        score = 0;
+        questionNumber = 0;
+        data = fetchApi(url)
+    };
+
+    const checkAnswerFn = (value, correct_answer) => {
+        const optionSelected = document.getElementById(`${value}`);
+        const correctOption = document.getElementById(`${correct_answer}`);
+        const optionsWrapper = document.querySelector("#optionsWrapper");
+
+        optionsWrapper.setAttribute("disable", true);
+        correctOption.setAttribute("correct", true);
+        optionSelected === correctOption
+            ? ++score
+            : optionSelected.setAttribute("incorrect", true);
+    };
+
+    const startQuizFn = () => {
+        const dialog = document.querySelector("#quizDialog");
+        dialog.showModal();
+    };
 </script>
 
-{#await dataArray}
+
+{#await data}
     <h3>Loading...</h3>
+
 {:then data}
     <h3>{@html data.results[questionNumber].question}</h3>
+
     <div id="optionsWrapper">
         {#each [...data.results[questionNumber].incorrect_answers, data.results[questionNumber].correct_answer].sort() as option}
             <span
@@ -65,25 +70,27 @@
             >
         {/each}
     </div>
-    <div id='btnWrapper'>
 
+
+    <div id="btnWrapper">
+        <button id="setParamBtn" on:click={startQuizFn}>New Params</button>
+        <button id="restartBtn" on:click={restartQuizFn}>Restart</button>
         <button
-        disabled={questionNumber === data.results.length - 1}
         id="nextBtn"
         on:click={() => nextQuestionFn(data.results.length - 1)}
+        >Next Question</button
         >
-        Next Question
-    </button>
-    <button id="restartBtn" on:click={restartQuiz}>New Quiz</button>
-</div>
+    </div>
 {:catch}
-<h3>Network Error</h3>
+    <h3>Something rong</h3>
 {/await}
 
+<QuizDialog bind:url  bind:totalQuestion/>
 <style>
     h3 {
         text-align: center;
     }
+
     div {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -96,21 +103,16 @@
         text-align: center;
         margin: 0.2rem;
     }
-    span:hover{
-        background-color: rgba(176, 173, 173, 0.814);
-    }
 
-    #btnWrapper{
+    #btnWrapper {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 1rem;
-        margin:1rem 0;
+        margin: 1rem 0;
     }
-    #nextBtn:hover {
-        background-color:rgb(172, 172, 244);;
-    }
-    #restartBtn:hover {
-        background-color:rgb(66, 176, 73);
+
+    #nextBtn:hover , #restartBtn:hover ,#setParamBtn:hover  {
+        background-color:rgba(185, 183, 183, 0.756);
     }
 </style>
